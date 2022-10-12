@@ -25,13 +25,13 @@ public class Matrix {
     }
 
 
-    public Matrix(Matrix matr2){
-        this.row = matr2.row;
-        this.column = matr2.column;
-        matr = new double[row][column];
-        for (int i = 0; i<matr2.row; i++){
-            for (int j=0; j<matr2.column; j++){
-                matr[i][j]=matr2.getMatr()[i][j];
+    public Matrix(Matrix matr){
+        this.row = matr.row;
+        this.column = matr.column;
+        this.matr = new double[row][column];
+        for (int i = 0; i<matr.row; i++){
+            for (int j=0; j<matr.column; j++){
+                this.matr[i][j]=matr.getMatr()[i][j];
             }
         }
     }
@@ -41,7 +41,7 @@ public class Matrix {
         return matr;
     }
 
-    public void SetMatr(){
+    public void setMatr(){
         Scanner in = new Scanner(System.in);
         for (int i = 0; i<getMatr().length; i++){
             for (int j=0; j<getMatr()[i].length; j++){
@@ -50,7 +50,7 @@ public class Matrix {
         }
     }
 
-    public void Out_Matr(){
+    public void printMatr(){
         for (int i=0; i<getMatr().length; i++){
             for (int j=0; j<getMatr()[i].length; j++){
                 System.out.print(Double.toString(getMatr()[i][j])+"     ");
@@ -60,37 +60,34 @@ public class Matrix {
         System.out.println("");
     }
 
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (double) tmp / factor;
+    public static double round(double value) {
+        double scale = Math.pow(10, 2);
+        double result = Math.ceil(value * scale) / scale;
+        return result;
     }
 
-    public void Random_fill_Matr(){
+    public void randomFillMatr(){
         for (int i = 0; i<getMatr().length; i++){
             for (int j=0; j<getMatr()[i].length; j++){
                 double start = -10, end = 10;
                 double random = new Random().nextDouble();
-                getMatr()[i][j]= round(start + (random * (end - start)), 2);
+                getMatr()[i][j]= round(start + (random * (end - start)));
             }
         }
     }
 
-    public void Get_elem(int row, int column){
+    public void getElem(int row, int column){
         System.out.println(getMatr()[row-1][column-1]+"\n");
     }
 
-    public void Get_row(int row){
+    public void getRow(int row){
         for (int i =0; i<getMatr()[row-1].length; i++){
             System.out.print(getMatr()[row-1][i]+"\t");
         }
         System.out.println("\n");
     }
 
-    public void Get_Column(int column) {
+    public void getColumn(int column) {
         for (int i =0; i<getMatr().length; i++){
             System.out.println(getMatr()[i][column-1]);
         }
@@ -111,7 +108,6 @@ public class Matrix {
 
     @Override
     public boolean equals(Object o) {
-        boolean elem;
         if (this == o) return true;
         if (o == null || getClass() != o.getClass())return false;
         Matrix matrix = (Matrix) o;
@@ -130,18 +126,18 @@ public class Matrix {
         return result;
     }
 
-    public int[] Get_Size(){
+    public int[] getSize(){
         int[] size = {row, column};
         return size;
     }
 
-    public void set_elem(int row, int column, double val){
+    public void setElem(int row, int column, double val){
         getMatr()[row-1][column-1]=val;
     }
 
-    public static Matrix column_matr(int row){
+    public static Matrix getColumnMatr(int row){
         Matrix column_mtr = new Matrix(row, 1);
-        column_mtr.Random_fill_Matr();
+        column_mtr.randomFillMatr();
         return column_mtr;
     }
 
@@ -157,18 +153,18 @@ public class Matrix {
         for (int i=0; i<row-1; ++i)
             for (int j=i+1; j<row; ++j)
                 for (int k=0; k<row; ++k)
-                    un_matr[index[j]][k] -= round(Mt.matr[index[j]][i]*un_matr[index[i]][k],2);
+                    un_matr[index[j]][k] -= round(Mt.matr[index[j]][i]*un_matr[index[i]][k]);
         for (int i=0; i<row; ++i)
         {
-            invert_mt.matr[row-1][i] = round(un_matr[index[row-1]][i]/Mt.matr[index[row-1]][row-1], 2);
+            invert_mt.matr[row-1][i] = round(un_matr[index[row-1]][i]/Mt.matr[index[row-1]][row-1]);
             for (int j=row-2; j>=0; --j)
             {
-                invert_mt.matr[j][i] = round(un_matr[index[j]][i], 2);
+                invert_mt.matr[j][i] = round(un_matr[index[j]][i]);
                 for (int k=j+1; k<row; ++k)
                 {
-                    invert_mt.matr[j][i] -= round(Mt.matr[index[j]][k]*invert_mt.matr[k][i], 2);
+                    invert_mt.matr[j][i] -= round(Mt.matr[index[j]][k]*invert_mt.matr[k][i]);
                 }
-                invert_mt.matr[j][i] = round(invert_mt.matr[j][i]/Mt.matr[index[j]][j], 2);
+                invert_mt.matr[j][i] = round(invert_mt.matr[j][i]/Mt.matr[index[j]][j]);
             }
         }
         return invert_mt;
@@ -189,7 +185,7 @@ public class Matrix {
                 double c0 = Math.abs(a[i][j]);
                 if (c0 > c1) c1 = c0;
             }
-            c[i] = round(c1,2);
+            c[i] = round(c1);
         }
         int k = 0;
         for (int j=0; j<n-1; ++j)
@@ -198,10 +194,10 @@ public class Matrix {
             for (int i=j; i<n; ++i)
             {
                 double pi0 = Math.abs(a[index[i]][j]);
-                pi0 = round(pi0/c[index[i]], 2);
+                pi0 = round(pi0/c[index[i]]);
                 if (pi0 > pi1)
                 {
-                    pi1 = round(pi0, 2);
+                    pi1 = round(pi0);
                     k = i;
                 }
             }
@@ -210,11 +206,43 @@ public class Matrix {
             index[k] = itmp;
             for (int i=j+1; i<n; ++i)
             {
-                double pj = round(a[index[i]][j]/a[index[j]][j], 2);
-                a[index[i]][j] = round(pj, 2);
+                double pj = round(a[index[i]][j]/a[index[j]][j]);
+                a[index[i]][j] = round(pj);
                 for (int l=j+1; l<n; ++l)
-                    a[index[i]][l] -= round(pj*a[index[j]][l], 2);
+                    a[index[i]][l] -= round(pj*a[index[j]][l]);
             }
         }
+    }
+
+
+    public static Matrix inverted(Matrix matrix){
+        int size = matrix.row;
+        Matrix invertMatrix = new Matrix(size, size);
+        Matrix copyMatrix = new Matrix(matrix);
+        for (int i = 0; i<size; i++){
+            invertMatrix.matr[i][i]=1;
+        }
+        for (int k =0; k<size;k++) {
+            double divider = copyMatrix.matr[k][k];
+            System.out.println(divider);
+            for (int i = 0; i < size; i++) {
+                copyMatrix.matr[k][i] = round(copyMatrix.matr[k][i] / divider);
+                invertMatrix.matr[k][i] = round(invertMatrix.matr[k][i] / divider);
+            }
+            invertMatrix.printMatr();
+            for (int i = 0; i < size; i++) {
+                if (i == k){
+                    continue;
+                }else {
+                    double multiplier = copyMatrix.matr[i][k];
+                    for (int j = 0; j < size; j++) {
+                        copyMatrix.matr[i][j] = copyMatrix.matr[i][j] - round(copyMatrix.matr[k][j] * multiplier);
+                        invertMatrix.matr[i][j] = invertMatrix.matr[i][j] - round(invertMatrix.matr[k][j] * multiplier);
+                    }
+                }
+            }
+            invertMatrix.printMatr();
+        }
+        return invertMatrix;
     }
 }
